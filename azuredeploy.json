@@ -1,0 +1,94 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "containerGroupName": {
+      "type": "string",
+      "defaultValue": "websocket-integration",
+      "metadata": {
+        "description": "Name for the container group"
+      }
+    },
+    "xTokenId": {
+      "type": "string",
+      "metadata": {
+        "description": "X-Token-ID for authentication"
+      }
+    },
+    "xTokenValue": {
+      "type": "securestring",
+      "metadata": {
+        "description": "X-Token-Value for authentication"
+      }
+    },
+    "graphqlWsUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "WebSocket URL for GraphQL endpoint"
+      }
+    },
+    "webhookUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "Webhook URL to forward detection events"
+      }
+    }
+  },
+  "variables": {
+    "containerImage": "ghcr.io/jumbrage/websocket-client:latest"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerInstance/containerGroups",
+      "apiVersion": "2021-09-01",
+      "name": "[parameters('containerGroupName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "containers": [
+          {
+            "name": "websocket-client",
+            "properties": {
+              "image": "[variables('containerImage')]",
+              "environmentVariables": [
+                {
+                  "name": "X_TOKEN_ID",
+                  "value": "[parameters('xTokenId')]"
+                },
+                {
+                  "name": "X_TOKEN_VALUE",
+                  "secureValue": "[parameters('xTokenValue')]"
+                },
+                {
+                  "name": "GRAPHQL_WS_URL",
+                  "value": "[parameters('graphqlWsUrl')]"
+                },
+                {
+                  "name": "WEBHOOK_URL",
+                  "value": "[parameters('webhookUrl')]"
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": 1,
+                  "memoryInGB": 1
+                }
+              }
+            }
+          }
+        ],
+        "osType": "Linux",
+        "restartPolicy": "Always"
+      }
+    }
+  ],
+  "outputs": {
+    "containerName": {
+      "type": "string",
+      "value": "[parameters('containerGroupName')]"
+    },
+    "provisioningState": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups', parameters('containerGroupName'))).provisioningState]"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+# Use a multi-arch base image
+FROM --platform=$TARGETPLATFORM python:3.9-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY websocket_client.py .
+
+CMD ["python", "websocket_client.py"]
