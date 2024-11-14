@@ -122,10 +122,11 @@ async def forward_to_webhook(detection):
     try:
         async with aiohttp.ClientSession() as session:
             async with session.post(WEBHOOK_URL, json={'detection': detection}) as response:
+                response_text = await response.text()  # Get response text to log it
                 if response.status == 200:
-                    logger.info("Successfully forwarded to webhook")
+                    logger.info(f"Successfully forwarded to webhook. Response: {response_text}")
                 else:
-                    logger.error(f"Webhook returned status {response.status}")
+                    logger.error(f"Webhook returned status {response.status}. Response: {response_text}")
     except Exception as e:
         logger.error(f"Error forwarding to webhook: {e}")
 
