@@ -45,5 +45,5 @@ docker run -e X_TOKEN_ID="your-token-id" \
 The container image is automatically built and published to the GitHub Container Registry with every push to the main branch. You can find the latest image at:
 
 ```
-ghcr.io/jumbrage/websocket-client:latest
+ghcr.io/jumbrage/websocket-client-da:latest
 ```
